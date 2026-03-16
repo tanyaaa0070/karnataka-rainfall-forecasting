@@ -1,0 +1,77 @@
+======================================================================
+MODEL EVALUATION REPORT
+Monthly Rainfall Forecasting — Karnataka Subdivisions
+======================================================================
+
+
+------------------------------------------------------------
+COASTAL KARNATAKA
+------------------------------------------------------------
+
+Model                 MAE     RMSE     MAPE       R²
+--------------------------------------------------
+SMA                324.41   401.03  9789.9%  -0.008
+SES                295.21   496.69   100.0%  -0.546
+Holt-Winters        82.23   135.75   686.5%   0.885
+SARIMA              81.61   136.68   524.3%   0.883
+Prophet             81.53   136.94   590.6%   0.882
+LSTM                80.84   143.91   146.7%   0.870
+
+🏆 Best model: Holt-Winters (RMSE = 135.75 mm)
+
+Ljung-Box Residual Test (lag=12):
+  SMA              p=0.0000 → Structure remaining
+  SES              p=0.0000 → Structure remaining
+  Holt-Winters     p=0.9987 → Adequate
+  SARIMA           p=0.9973 → Adequate
+  Prophet          p=0.9960 → Adequate
+  LSTM             p=0.2520 → Adequate
+
+------------------------------------------------------------
+NORTH INTERIOR KARNATAKA
+------------------------------------------------------------
+
+Model                 MAE     RMSE     MAPE       R²
+--------------------------------------------------
+SMA                 53.88    63.81  3137.1%  -0.010
+SES                 51.56    72.09  1333.0%  -0.289
+Holt-Winters        23.78    35.71   535.1%   0.684
+SARIMA              22.39    35.39   317.8%   0.689
+Prophet             23.62    35.69   472.0%   0.684
+LSTM                23.08    34.62   285.6%   0.703
+
+🏆 Best model: LSTM (RMSE = 34.62 mm)
+
+Ljung-Box Residual Test (lag=12):
+  SMA              p=0.0000 → Structure remaining
+  SES              p=0.0000 → Structure remaining
+  Holt-Winters     p=0.1047 → Adequate
+  SARIMA           p=0.1287 → Adequate
+  Prophet          p=0.1673 → Adequate
+  LSTM             p=0.3957 → Adequate
+
+------------------------------------------------------------
+SOUTH INTERIOR KARNATAKA
+------------------------------------------------------------
+
+Model                 MAE     RMSE     MAPE       R²
+--------------------------------------------------
+SMA                 73.80    86.74  4281.8%  -0.017
+SES                 78.23   108.76  1121.2%  -0.599
+Holt-Winters        27.75    39.52   350.3%   0.789
+SARIMA              27.64    39.65   303.1%   0.787
+Prophet             29.09    40.67   425.7%   0.776
+LSTM                29.92    42.83   375.8%   0.752
+
+🏆 Best model: Holt-Winters (RMSE = 39.52 mm)
+
+Ljung-Box Residual Test (lag=12):
+  SMA              p=0.0000 → Structure remaining
+  SES              p=0.0000 → Structure remaining
+  Holt-Winters     p=0.8834 → Adequate
+  SARIMA           p=0.9118 → Adequate
+  Prophet          p=0.7508 → Adequate
+  LSTM             p=0.7445 → Adequate
+
+======================================================================
+END OF REPORT

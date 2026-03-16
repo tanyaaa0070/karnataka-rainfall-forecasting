@@ -1,0 +1,57 @@
+======================================================================
+FINAL ANALYSIS REPORT
+Monthly Rainfall Trend & Forecasting in Karnataka
+Data: IMD Rainfall Dataset (1901-2015)
+======================================================================
+
+PROJECT SUMMARY
+----------------------------------------
+This project analyzes 115 years of monthly rainfall data for
+three Karnataka subdivisions using time series techniques.
+
+SUBDIVISIONS ANALYZED:
+  1. Coastal Karnataka (Western Ghats coast)
+  2. North Interior Karnataka (Deccan plateau)
+  3. South Interior Karnataka (transition zone)
+
+MODELS IMPLEMENTED:
+  1. Simple Moving Average (SMA)
+  2. Simple Exponential Smoothing (SES)
+  3. Holt-Winters Triple Exponential Smoothing
+  4. SARIMA (Seasonal ARIMA) — Primary model
+  5. Facebook Prophet
+  6. LSTM Neural Network
+
+KEY FINDINGS:
+----------------------------------------
+
+COASTAL KARNATAKA:
+  Mean annual rainfall: 3406 mm
+  Monsoon contribution: 87.5%
+  Driest year: 1918 (2511 mm)
+  Wettest year: 1961 (5554 mm)
+
+NORTH INTERIOR KARNATAKA:
+  Mean annual rainfall: 718 mm
+  Monsoon contribution: 69.9%
+  Driest year: 1920 (470 mm)
+  Wettest year: 1997 (1096 mm)
+
+SOUTH INTERIOR KARNATAKA:
+  Mean annual rainfall: 1040 mm
+  Monsoon contribution: 65.8%
+  Driest year: 1918 (733 mm)
+  Wettest year: 1961 (1410 mm)
+
+
+DOMAIN APPLICATIONS:
+----------------------------------------
+  1. Kharif crop planning — sowing decision support
+  2. Reservoir inflow estimation — water management
+  3. Drought probability assessment — disaster preparedness
+  4. Coastal vs Interior contrast — regional planning
+  5. Climate change trend detection — policy support
+
+
+======================================================================
+END OF REPORT

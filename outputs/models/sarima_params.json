@@ -1,0 +1,41 @@
+{
+  "COASTAL KARNATAKA": {
+    "order": [
+      0,
+      1,
+      2
+    ],
+    "seasonal_order": [
+      1,
+      1,
+      1,
+      12
+    ]
+  },
+  "NORTH INTERIOR KARNATAKA": {
+    "order": [
+      0,
+      1,
+      2
+    ],
+    "seasonal_order": [
+      0,
+      1,
+      1,
+      12
+    ]
+  },
+  "SOUTH INTERIOR KARNATAKA": {
+    "order": [
+      0,
+      1,
+      2
+    ],
+    "seasonal_order": [
+      1,
+      1,
+      1,
+      12
+    ]
+  }
+}

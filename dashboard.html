@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karnataka Rainfall Forecasting — TSFT Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #111827;
+            --bg-card: #1a2035;
+            --bg-card-hover: #1f2847;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-blue: #3b82f6;
+            --accent-cyan: #06b6d4;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-orange: #f59e0b;
+            --accent-purple: #8b5cf6;
+            --accent-pink: #ec4899;
+            --coastal: #3b82f6;
+            --north: #ef4444;
+            --south: #10b981;
+            --border: rgba(255,255,255,0.06);
+            --glow-blue: 0 0 30px rgba(59,130,246,0.15);
+            --glow-green: 0 0 30px rgba(16,185,129,0.15);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ─── Animated Background ─────────────────────── */
+        .bg-pattern {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: 
+                radial-gradient(ellipse at 20% 50%, rgba(59,130,246,0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(16,185,129,0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 80%, rgba(139,92,246,0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ─── Navigation ──────────────────────────────── */
+        .navbar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            background: rgba(10, 14, 26, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-brand .logo {
+            width: 36px; height: 36px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .nav-brand h1 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #f1f5f9, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-brand span {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 4px;
+        }
+
+        .nav-tab {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            background: none;
+        }
+
+        .nav-tab:hover {
+            color: var(--text-primary);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .nav-tab.active {
+            color: var(--accent-blue);
+            background: rgba(59,130,246,0.1);
+        }
+
+        /* ─── Main Content ────────────────────────────── */
+        .main {
+            position: relative;
+            z-index: 1;
+            padding: 84px 2rem 3rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ─── Hero Section ────────────────────────────── */
+        .hero {
+            text-align: center;
+            padding: 3rem 0 2rem;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            background: rgba(59,130,246,0.1);
+            border: 1px solid rgba(59,130,246,0.2);
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--accent-blue);
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.5px;
+        }
+
+        .hero h2 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            line-height: 1.7;
+        }
+
+        /* ─── Stats Row ───────────────────────────────── */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(59,130,246,0.3);
+            box-shadow: var(--glow-blue);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        /* ─── Cards Grid ──────────────────────────────── */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.2rem;
+            margin: 2rem 0;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(59,130,246,0.2);
+            box-shadow: var(--glow-blue);
+        }
+
+        .card-header {
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-icon {
+            width: 32px; height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .card-header h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .card-body img {
+            width: 100%;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .card-body img:hover {
+            transform: scale(1.02);
+        }
+
+        /* ─── Phase Sections ──────────────────────────── */
+        .phase-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin: 2.5rem 0 1.5rem;
+        }
+
+        .phase-number {
+            width: 48px; height: 48px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .phase-header h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .phase-header p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* ─── Tables ──────────────────────────────────── */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        th {
+            background: rgba(59,130,246,0.08);
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--accent-blue);
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        tr:hover td {
+            background: rgba(255,255,255,0.02);
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 600;
+        }
+
+        .tag-green { background: rgba(16,185,129,0.15); color: var(--accent-green); }
+        .tag-red { background: rgba(239,68,68,0.15); color: var(--accent-red); }
+        .tag-blue { background: rgba(59,130,246,0.15); color: var(--accent-blue); }
+        .tag-orange { background: rgba(245,158,11,0.15); color: var(--accent-orange); }
+        .tag-purple { background: rgba(139,92,246,0.15); color: var(--accent-purple); }
+
+        .best-row td {
+            background: rgba(16,185,129,0.05);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* ─── Model Cards ─────────────────────────────── */
+        .model-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .model-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .model-card:hover {
+            border-color: rgba(59,130,246,0.3);
+            transform: translateY(-3px);
+        }
+
+        .model-card h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .model-card .rank {
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 20px;
+        }
+
+        .model-card p {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .model-card .formula {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            background: rgba(0,0,0,0.3);
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin: 10px 0;
+            color: var(--accent-cyan);
+            overflow-x: auto;
+        }
+
+        /* ─── Timeline ────────────────────────────────── */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+            margin: 2rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px; top: 0; bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, var(--accent-blue), var(--accent-purple), var(--accent-green));
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 1.5rem;
+            padding-left: 20px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -26px; top: 6px;
+            width: 12px; height: 12px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+            border: 2px solid var(--bg-primary);
+        }
+
+        .timeline-item h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .timeline-item p {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* ─── Image Modal ─────────────────────────────── */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-overlay img {
+            max-width: 92%;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 12px;
+            box-shadow: 0 0 60px rgba(0,0,0,0.5);
+        }
+
+        /* ─── Conclusion Banner ───────────────────────── */
+        .conclusion-banner {
+            background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(139,92,246,0.1));
+            border: 1px solid rgba(59,130,246,0.2);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .conclusion-banner h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .conclusion-banner ul {
+            list-style: none;
+            max-width: 700px;
+            margin: 0 auto;
+            text-align: left;
+        }
+
+        .conclusion-banner li {
+            padding: 8px 0;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            line-height: 1.5;
+        }
+
+        .conclusion-banner li::before {
+            content: '→';
+            color: var(--accent-blue);
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        /* ─── Plot Section  ───────────────────────────── */
+        .plot-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.2rem;
+            margin: 1.5rem 0;
+        }
+
+        .plot-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .plot-item:hover {
+            border-color: rgba(59,130,246,0.3);
+            box-shadow: var(--glow-blue);
+        }
+
+        .plot-item img {
+            width: 100%;
+            display: block;
+            cursor: pointer;
+        }
+
+        .plot-item .caption {
+            padding: 12px 16px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            border-top: 1px solid var(--border);
+        }
+
+        /* ─── Responsive ──────────────────────────────── */
+        @media (max-width: 768px) {
+            .navbar { padding: 0 1rem; }
+            .nav-tabs { display: none; }
+            .main { padding: 80px 1rem 2rem; }
+            .hero h2 { font-size: 1.8rem; }
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .plot-gallery { grid-template-columns: 1fr; }
+            .cards-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-pattern"></div>
+
+    <!-- ─── Navbar ──────────────────────────────────── -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <div class="logo">🌧️</div>
+            <div>
+                <h1>Karnataka Rainfall Forecasting</h1>
+                <span>Time Series & Forecasting Project</span>
+            </div>
+        </div>
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showSection('overview')">Overview</button>
+            <button class="nav-tab" onclick="showSection('exploration')">Exploration</button>
+            <button class="nav-tab" onclick="showSection('stationarity')">Stationarity</button>
+            <button class="nav-tab" onclick="showSection('models')">Models</button>
+            <button class="nav-tab" onclick="showSection('evaluation')">Evaluation</button>
+            <button class="nav-tab" onclick="showSection('forecast')">Forecast</button>
+            <button class="nav-tab" onclick="showSection('applications')">Applications</button>
+        </div>
+    </nav>
+
+    <!-- ─── Image Modal ─────────────────────────────── -->
+    <div class="modal-overlay" id="imageModal" onclick="closeModal()">
+        <img id="modalImg" src="" alt="Enlarged plot">
+    </div>
+
+    <div class="main">
+
+        <!-- ═════════════════════════════════════════════ -->
+        <!-- SECTION: OVERVIEW                             -->
+        <!-- ═════════════════════════════════════════════ -->
+        <div class="section active" id="section-overview">
+            <div class="hero">
+                <div class="hero-badge">📊 IMD DATASET • 1901–2015 • 115 YEARS</div>
+                <h2>Monthly Rainfall Trend &<br>Forecasting in Karnataka</h2>
+                <p>Analyzing 115 years of monthly rainfall across three Karnataka subdivisions using 6 forecasting models — from classical SARIMA to deep learning LSTM.</p>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-value">115</div>
+                    <div class="stat-label">Years of Data (1901–2015)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">4,140</div>
+                    <div class="stat-label">Monthly Observations</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">6</div>
+                    <div class="stat-label">Forecasting Models</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">46</div>
+                    <div class="stat-label">Charts Generated</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">7</div>
+                    <div class="stat-label">Analysis Phases</div>
+                </div>
+            </div>
+
+            <!-- Subdivisions -->
+            <div class="phase-header">
+                <div class="phase-number">📍</div>
+                <div><h3>Three Karnataka Subdivisions</h3><p>Dramatically different rainfall regimes</p></div>
+            </div>
+
+            <div class="cards-grid" style="grid-template-columns: repeat(3, 1fr);">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon" style="background: rgba(59,130,246,0.15); color: var(--coastal);">🌊</div>
+                        <h3 style="color: var(--coastal);">Coastal Karnataka</h3>
+                    </div>
+                    <div class="card-body">
+                        <div style="font-size: 2rem; font-weight: 800; color: var(--coastal);">3,406 mm</div>
+                        <div style="color: var(--text-muted); font-size: 0.82rem; margin-top: 4px;">Mean Annual Rainfall</div>
+                        <div style="margin-top: 12px; font-size: 0.82rem; color: var(--text-secondary); line-height: 1.6;">
+                            Western Ghats coast. Heavy orographic rainfall.<br>
+                            Monsoon share: <strong>87.5%</strong><br>
+                            Peak: July (1,127 mm avg)
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon" style="background: rgba(239,68,68,0.15); color: var(--north);">🏜️</div>
+                        <h3 style="color: var(--north);">North Interior Karnataka</h3>
+                    </div>
+                    <div class="card-body">
+                        <div style="font-size: 2rem; font-weight: 800; color: var(--north);">718 mm</div>
+                        <div style="color: var(--text-muted); font-size: 0.82rem; margin-top: 4px;">Mean Annual Rainfall</div>
+                        <div style="margin-top: 12px; font-size: 0.82rem; color: var(--text-secondary); line-height: 1.6;">
+                            Semi-arid Deccan plateau. Rain-shadow zone.<br>
+                            Monsoon share: <strong>69.9%</strong><br>
+                            Peak: September (143 mm avg)
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon" style="background: rgba(16,185,129,0.15); color: var(--south);">🌿</div>
+                        <h3 style="color: var(--south);">South Interior Karnataka</h3>
+                    </div>
+                    <div class="card-body">
+                        <div style="font-size: 2rem; font-weight: 800; color: var(--south);">1,040 mm</div>
+                        <div style="color: var(--text-muted); font-size: 0.82rem; margin-top: 4px;">Mean Annual Rainfall</div>
+                        <div style="margin-top: 12px; font-size: 0.82rem; color: var(--text-secondary); line-height: 1.6;">
+                            Transition zone. Moderate rainfall.<br>
+                            Monsoon share: <strong>65.8%</strong><br>
+                            Peak: July (231 mm avg)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pipeline -->
+            <div class="phase-header">
+                <div class="phase-number">⚡</div>
+                <div><h3>7-Phase Analysis Pipeline</h3><p>Each phase maps to a core course topic</p></div>
+            </div>
+
+            <div class="timeline">
+                <div class="timeline-item"><h4>Phase 1 — Data Foundation</h4><p>Loading IMD data, filtering Karnataka, handling 2 missing values, outlier detection (IQR), reshaping to time series format with DatetimeIndex</p></div>
+                <div class="timeline-item"><h4>Phase 2 — Exploratory Analysis</h4><p>8 visualization types: seasonal boxplots, monthly profiles, annual trends, heatmaps, extreme events, seasonal contribution, decade analysis, correlation</p></div>
+                <div class="timeline-item"><h4>Phase 3 — Stationarity & Decomposition</h4><p>ADF & KPSS tests, rolling statistics, classical & STL decomposition, ACF/PACF analysis, spectral analysis (periodogram)</p></div>
+                <div class="timeline-item"><h4>Phase 4 — Modelling (6 Models)</h4><p>SMA, SES, Holt-Winters, SARIMA (grid search), Prophet, LSTM — trained on 80% data (1901–1992)</p></div>
+                <div class="timeline-item"><h4>Phase 5 — Evaluation</h4><p>MAE/RMSE/MAPE/R² metrics, Ljung-Box residual test, residual diagnostics, radar charts, model ranking</p></div>
+                <div class="timeline-item"><h4>Phase 6 — Forecasting</h4><p>12-month ahead forecast with 80% & 95% confidence intervals, monsoon onset prediction</p></div>
+                <div class="timeline-item"><h4>Phase 7 — Domain Applications</h4><p>Kharif crop advisory, reservoir inflow estimation, drought probability, climate change detection</p></div>
+            </div>
+        </div>
+
+        <!-- ═════════════════════════════════════════════ -->
+        <!-- SECTION: EXPLORATION                          -->
+        <!-- ═════════════════════════════════════════════ -->
+        <div class="section" id="section-exploration">
+            <div class="phase-header">
+                <div class="phase-number">2</div>
+                <div><h3>Descriptive & Exploratory Analysis</h3><p>Visual and statistical exploration of time series</p></div>
+            </div>
+
+            <div class="plot-gallery">
+                <div class="plot-item">
+                    <img src="outputs/plots/P2_02_mean_monthly_profile.png" alt="Monthly Profile" onclick="openModal(this)">
+                    <div class="caption">Mean Monthly Rainfall Profile — clearly shows monsoon dominance (Jun–Sep)</div>
+                </div>
+                <div class="plot-item">
+                    <img src="outputs/plots/P2_01_seasonal_boxplots.png" alt="Seasonal Boxplots" onclick="openModal(this)">
+                    <div class="caption">Monthly Box Plots — monsoon months highlighted in dark, dry months in light</div>
+                </div>
+                <div class="plot-item">
+                    <img src="outputs/plots/P2_03_annual_trends.png" alt="Annual Trends" onclick="openModal(this)">
+                    <div class="caption">Annual Rainfall with Trend Lines and 10-year Moving Average</div>
+                </div>
+                <div class="plot-item">
+                    <img src="outputs/plots/P2_04_rainfall_heatmap.png" alt="Heatmap" onclick="openModal(this)">
+                    <div class="caption">Monthly Rainfall Heatmap — 115 years × 12 months visual fingerprint</div>
+                </div>
+                <div class="plot-item">
+                    <img src="outputs/plots/P2_05_extreme_years.png" alt="Extreme Years" onclick="openModal(this)">
+                    <div class="caption">Rainfall Anomalies — identifying droughts (below) and floods (above)</div>
+                </div>
+                <div class="plot-item">
+                    <img src="outputs/plots/P2_06_seasonal_contribution.png" alt="Seasonal Contribution" onclick="openModal(this)">
+                    <div class="caption">Seasonal Contribution — Monsoon dominates in all three regions</div>
+                </div>
+                <div class="plot-item">
+                    <img src="outputs/plots/P2_07_decade_analysis.png" alt="Decade Analysis" onclick="openModal(this)">
+                    <div class="caption">Decade-wise Mean Rainfall — long-term stability</div>
+                </div>
+                <div class="plot-item">
+                    <img src="outputs/plots/P2_08_month_correlation.png" alt="Correlation" onclick="openModal(this)">
+                    <div class="caption">Inter-month Correlation — consecutive monsoon months are correlated</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═════════════════════════════════════════════ -->
+        <!-- SECTION: STATIONARITY                         -->
+        <!-- ═════════════════════════════════════════════ -->
+        <div class="section" id="section-stationarity">
+            <div class="phase-header">
+                <div class="phase-number">3</div>
+                <div><h3>Stationarity & Decomposition</h3><p>Core exam topic — ADF, KPSS, STL, ACF/PACF</p></div>
+            </div>
+
+            <!-- Stationarity Test Results -->
+            <div class="card" style="margin: 1.5rem 0;">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(16,185,129,0.15);">📐</div>
+                    <h3>Stationarity Test Results</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-wrapper">
+                        <table>
+                            <tr><th>Test</th><th>Coastal KA</th><th>N. Interior KA</th><th>S. Interior KA</th></tr>
+                            <tr><td>ADF p-value</td><td>0.000011 <span class="tag tag-green">Stationary</span></td><td>0.000000 <span class="tag tag-green">Stationary</span></td><td>0.000000 <span class="tag tag-green">Stationary</span></td></tr>
+                            <tr><td>KPSS p-value</td><td>0.100 <span class="tag tag-green">Stationary</span></td><td>0.100 <span class="tag tag-green">Stationary</span></td><td>0.100 <span class="tag tag-green">Stationary</span></td></tr>
+                            <tr><td><strong>Joint Verdict</strong></td><td><strong>✅ Both agree</strong></td><td><strong>✅ Both agree</strong></td><td><strong>✅ Both agree</strong></td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="plot-gallery">
+                <div class="plot-item">
+                    <img src="outputs/plots/P3_01_rolling_stationarity.png" alt="Rolling Stats" onclick="openModal(this)">
+                    <div class="caption">Visual Stationarity Check — Rolling Mean & Standard Deviation</div>
+                </div>
+                <div class="plot-item">
+                    <img src="outputs/plots/P3_02_classical_decomp_COASTAL.png" alt="Decomposition" onclick="openModal(this)">
+                    <div class="caption">Classical Additive Decomposition — Coastal KA (Trend + Seasonal + Residual)</div>
+                </div>
+                <div class="plot-item">
+                    <img src="outputs/plots/P3_03_stl_decomp_COASTAL.png" alt="STL" onclick="openModal(this)">
+                    <div class="caption">STL Decomposition (Robust) — Coastal KA</div>
+                </div>
+                <div class="plot-item">
+                    <img src="outputs/plots/P3_04_acf_pacf_COASTAL.png" alt="ACF PACF" onclick="openModal(this)">
+                    <div class="caption">ACF & PACF — Spikes at lag 12, 24, 36 confirm annual seasonality</div>
+                </div>
+                <div class="plot-item">
+                    <img src="outputs/plots/P3_05_spectral_analysis.png" alt="Spectral" onclick="openModal(this)">
+                    <div class="caption">Spectral Analysis — Dominant peak at 1 cycle/year</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═════════════════════════════════════════════ -->
+        <!-- SECTION: MODELS                               -->
+        <!-- ═════════════════════════════════════════════ -->
+        <div class="section" id="section-models">
+            <div class="phase-header">
+                <div class="phase-number">4</div>
+                <div><h3>Modelling Techniques</h3><p>6 models — from classical to deep learning</p></div>
+            </div>
+
+            <div class="model-grid">
+                <div class="model-card">
+                    <h4>📏 Simple Moving Average <span class="rank tag tag-red">#6</span></h4>
+                    <div class="formula">Forecast = mean(last 12 values)</div>
+                    <p>Averages the last 12 months. Gives a flat prediction — can't capture seasonality. Baseline only.</p>
+                </div>
+                <div class="model-card">
+                    <h4>📈 Exponential Smoothing <span class="rank tag tag-red">#5</span></h4>
+                    <div class="formula">F(t) = α·Y(t-1) + (1-α)·F(t-1)</div>
+                    <p>Weighted average with more weight on recent values. α=1.0 means it just copies last month. No seasonal awareness.</p>
+                </div>
+                <div class="model-card">
+                    <h4>🌡️ Holt-Winters <span class="rank tag tag-green">#2</span></h4>
+                    <div class="formula">F = Level(α) + Trend(β) + Season(γ, s=12)</div>
+                    <p>Triple exponential smoothing. Captures level, trend AND 12-month seasonal cycle. γ≈0.03 means season is very stable.</p>
+                </div>
+                <div class="model-card">
+                    <h4>⭐ SARIMA <span class="rank tag tag-blue">#1 BEST</span></h4>
+                    <div class="formula">SARIMA(0,1,2)(1,1,1)[12] — AIC optimized</div>
+                    <p>Seasonal ARIMA — the gold standard. AR + differencing + MA at both regular and seasonal levels. Grid search over 72+ combinations.</p>
+                </div>
+                <div class="model-card">
+                    <h4>🔮 Facebook Prophet <span class="rank tag tag-purple">#3</span></h4>
+                    <div class="formula">y(t) = trend(t) + season(t) + ε(t)</div>
+                    <p>Automatic decomposition. Piecewise linear trend + Fourier seasonality. Zero manual tuning needed. Great for non-experts.</p>
+                </div>
+                <div class="model-card">
+                    <h4>🧠 LSTM Neural Network <span class="rank tag tag-orange">#4</span></h4>
+                    <div class="formula">LSTM(64) → LSTM(32) → Dense(32) → Dense(1)</div>
+                    <p>Deep learning with memory gates (forget, input, output). Can learn non-linear patterns. 12-lag input, 50 epochs, walk-forward prediction.</p>
+                </div>
+            </div>
+
+            <div class="plot-gallery">
+                <div class="plot-item">
+                    <img src="outputs/plots/P4_02_combined_comparison_COASTAL.png" alt="Coastal Models" onclick="openModal(this)">
+                    <div class="caption">All 6 Models vs Actual — Coastal Karnataka</div>
+                </div>
+                <div class="plot-item">
+                    <img src="outputs/plots/P4_02_combined_comparison_NORTH_INTERIOR.png" alt="North Models" onclick="openModal(this)">
+                    <div class="caption">All 6 Models vs Actual — North Interior Karnataka</div>
+                </div>
+                <div class="plot-item">
+                    <img src="outputs/plots/P4_02_combined_comparison_SOUTH_INTERIOR.png" alt="South Models" onclick="openModal(this)">
+                    <div class="caption">All 6 Models vs Actual — South Interior Karnataka</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═════════════════════════════════════════════ -->
+        <!-- SECTION: EVALUATION                           -->
+        <!-- ═════════════════════════════════════════════ -->
+        <div class="section" id="section-evaluation">
+            <div class="phase-header">
+                <div class="phase-number">5</div>
+                <div><h3>Model Evaluation</h3><p>MAE, RMSE, MAPE, R², Ljung-Box residual test</p></div>
+            </div>
+
+            <!-- Metrics Table -->
+            <div class="card" style="margin: 1.5rem 0;">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(59,130,246,0.15);">📊</div>
+                    <h3>Coastal Karnataka — Model Accuracy</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-wrapper">
+                        <table>
+                            <tr><th>Model</th><th>MAE (mm)</th><th>RMSE (mm)</th><th>R²</th><th>Ljung-Box</th></tr>
+                            <tr><td>SMA</td><td>324.41</td><td>401.03</td><td>-0.008</td><td><span class="tag tag-red">❌ p=0.000</span></td></tr>
+                            <tr><td>SES</td><td>295.21</td><td>496.69</td><td>-0.546</td><td><span class="tag tag-red">❌ p=0.000</span></td></tr>
+                            <tr class="best-row"><td>🏆 Holt-Winters</td><td>82.23</td><td><strong>135.75</strong></td><td><strong>0.885</strong></td><td><span class="tag tag-green">✅ p=0.999</span></td></tr>
+                            <tr class="best-row"><td>⭐ SARIMA</td><td>81.61</td><td>136.68</td><td>0.883</td><td><span class="tag tag-green">✅ p=0.997</span></td></tr>
+                            <tr><td>Prophet</td><td>81.53</td><td>136.94</td><td>0.882</td><td><span class="tag tag-green">✅ p=0.996</span></td></tr>
+                            <tr><td>LSTM</td><td>80.84</td><td>143.91</td><td>0.870</td><td><span class="tag tag-green">✅ p=0.252</span></td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="plot-gallery">
+                <div class="plot-item">
+                    <img src="outputs/plots/P5_01_error_comparison.png" alt="Error Comparison" onclick="openModal(this)">
+                    <div class="caption">RMSE Comparison across all subdivisions</div>
+                </div>
+                <div class="plot-item">
+                    <img src="outputs/plots/P5_02_all_metrics_comparison.png" alt="All Metrics" onclick="openModal(this)">
+                    <div class="caption">MAE, RMSE, MAPE — grouped comparison</div>
+                </div>
+                <div class="plot-item">
+                    <img src="outputs/plots/P5_04_radar_chart_COASTAL.png" alt="Radar" onclick="openModal(this)">
+                    <div class="caption">Radar Chart — Multi-metric model comparison (Coastal KA)</div>
+                </div>
+                <div class="plot-item">
+                    <img src="outputs/plots/P5_03_residual_diagnostics_COASTAL.png" alt="Residuals" onclick="openModal(this)">
+                    <div class="caption">Residual Diagnostics — time plot, histogram, ACF for all 6 models</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═════════════════════════════════════════════ -->
+        <!-- SECTION: FORECAST                             -->
+        <!-- ═════════════════════════════════════════════ -->
+        <div class="section" id="section-forecast">
+            <div class="phase-header">
+                <div class="phase-number">6</div>
+                <div><h3>12-Month Ahead Forecast</h3><p>SARIMA forecast with 80% and 95% confidence intervals</p></div>
+            </div>
+
+            <div class="stats-row" style="grid-template-columns: repeat(3, 1fr);">
+                <div class="stat-card" style="border-color: rgba(59,130,246,0.3);">
+                    <div class="stat-value" style="color: var(--coastal);">3,572 mm</div>
+                    <div class="stat-label">Coastal KA (+4.9%)</div>
+                </div>
+                <div class="stat-card" style="border-color: rgba(239,68,68,0.3);">
+                    <div class="stat-value" style="background: linear-gradient(135deg, var(--north), #f87171); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">707 mm</div>
+                    <div class="stat-label">N. Interior KA (-1.6%)</div>
+                </div>
+                <div class="stat-card" style="border-color: rgba(16,185,129,0.3);">
+                    <div class="stat-value" style="background: linear-gradient(135deg, var(--south), #34d399); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">1,101 mm</div>
+                    <div class="stat-label">S. Interior KA (+5.9%)</div>
+                </div>
+            </div>
+
+            <div class="plot-gallery">
+                <div class="plot-item">
+                    <img src="outputs/plots/P6_01_forecast_COASTAL.png" alt="Forecast Coastal" onclick="openModal(this)">
+                    <div class="caption">Coastal KA — SARIMA forecast with confidence intervals + Prophet & Holt-Winters comparison</div>
+                </div>
+                <div class="plot-item">
+                    <img src="outputs/plots/P6_01_forecast_NORTH_INTERIOR.png" alt="Forecast North" onclick="openModal(this)">
+                    <div class="caption">North Interior KA — near-normal rainfall predicted</div>
+                </div>
+                <div class="plot-item">
+                    <img src="outputs/plots/P6_01_forecast_SOUTH_INTERIOR.png" alt="Forecast South" onclick="openModal(this)">
+                    <div class="caption">South Interior KA — slightly above normal</div>
+                </div>
+                <div class="plot-item">
+                    <img src="outputs/plots/P6_02_seasonal_forecast_bar.png" alt="Seasonal Bar" onclick="openModal(this)">
+                    <div class="caption">Monthly Forecast — all 3 subdivisions (monsoon peak visible)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═════════════════════════════════════════════ -->
+        <!-- SECTION: APPLICATIONS                         -->
+        <!-- ═════════════════════════════════════════════ -->
+        <div class="section" id="section-applications">
+            <div class="phase-header">
+                <div class="phase-number">7</div>
+                <div><h3>Domain Applications</h3><p>Real-world impact — agriculture, water management, climate change</p></div>
+            </div>
+
+            <div class="plot-gallery">
+                <div class="plot-item">
+                    <img src="outputs/plots/P7_01_crop_suitability.png" alt="Crop" onclick="openModal(this)">
+                    <div class="caption">Kharif Crop Suitability — forecast overlaid on historical monsoon distribution</div>
+                </div>
+                <div class="plot-item">
+                    <img src="outputs/plots/P7_02_reservoir_inflow.png" alt="Reservoir" onclick="openModal(this)">
+                    <div class="caption">Reservoir Inflow Estimation — KRS, Tungabhadra, Linganamakki</div>
+                </div>
+                <div class="plot-item">
+                    <img src="outputs/plots/P7_03_drought_probability.png" alt="Drought" onclick="openModal(this)">
+                    <div class="caption">Drought Probability — normal distribution with severity thresholds</div>
+                </div>
+                <div class="plot-item">
+                    <img src="outputs/plots/P7_04_coastal_vs_interior.png" alt="Comparison" onclick="openModal(this)">
+                    <div class="caption">Coastal vs Interior — 4.7× rainfall contrast, trend comparison, CV analysis</div>
+                </div>
+                <div class="plot-item">
+                    <img src="outputs/plots/P7_05_climate_change.png" alt="Climate" onclick="openModal(this)">
+                    <div class="caption">Climate Change Indicators — 30yr moving avg, extreme events, variability trends</div>
+                </div>
+            </div>
+
+            <!-- Climate Change Finding -->
+            <div class="conclusion-banner" style="text-align: left;">
+                <h3>🌍 Key Climate Change Finding</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <tr><th>Subdivision</th><th>Trend</th><th>p-value</th><th>Significant?</th></tr>
+                        <tr class="best-row"><td>Coastal KA</td><td>+3.84 mm/year</td><td>0.004</td><td><span class="tag tag-green">✅ Yes</span></td></tr>
+                        <tr class="best-row"><td>S. Interior KA</td><td>+1.08 mm/year</td><td>0.010</td><td><span class="tag tag-green">✅ Yes</span></td></tr>
+                        <tr><td>N. Interior KA</td><td>+0.37 mm/year</td><td>0.325</td><td><span class="tag tag-red">❌ No</span></td></tr>
+                    </table>
+                </div>
+                <p style="margin-top: 12px; font-size: 0.85rem; color: var(--text-secondary);">Coastal Karnataka's rainfall has increased by ~442 mm since 1901 — a statistically significant climate change signal.</p>
+            </div>
+
+            <!-- Final Conclusion -->
+            <div class="conclusion-banner">
+                <h3>🎓 Project Conclusions</h3>
+                <ul>
+                    <li>Karnataka's rainfall is <strong>strongly seasonal</strong> — monsoon (Jun-Sep) contributes 66-88% of annual rainfall</li>
+                    <li><strong>SARIMA and Holt-Winters</strong> are the best models (R² > 0.78), reducing error by 70-75% over simple models</li>
+                    <li>Simple models (SMA, SES) <strong>completely fail</strong> — they can't capture seasonality and fail the Ljung-Box test</li>
+                    <li>LSTM offers <strong>no meaningful improvement</strong> over SARIMA for this regular, linear seasonal pattern</li>
+                    <li>All forecasts predict <strong>near-normal rainfall</strong> with normal monsoon onset — no drought risk</li>
+                    <li>Coastal KA shows <strong>significant climate change signal</strong> (+3.84 mm/year, p=0.004)</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function showSection(name) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            
+            // Show target
+            document.getElementById('section-' + name).classList.add('active');
+            event.target.classList.add('active');
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function openModal(img) {
+            const modal = document.getElementById('imageModal');
+            document.getElementById('modalImg').src = img.src;
+            modal.classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('imageModal').classList.remove('show');
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+    </script>
+</body>
+</html>
